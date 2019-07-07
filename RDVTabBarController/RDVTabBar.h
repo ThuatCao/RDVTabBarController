@@ -77,6 +77,8 @@
  */
 - (CGFloat)minimumContentHeight;
 
+- (void)setTranslucent:(BOOL)translucent;
+
 /*
  * Enable or disable tabBar translucency. Default is NO.
  */
