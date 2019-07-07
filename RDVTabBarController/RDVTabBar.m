@@ -81,9 +81,14 @@
             itemHeight = frameSize.height;
         }
         
+        float spaceX = 0;
+        if ([[UIScreen mainScreen] bounds].size.height >= 812) {
+            spaceX = 26;
+        }
+        
         [item setFrame:CGRectMake(self.contentEdgeInsets.left + (index * self.itemWidth),
                                   roundf(frameSize.height - itemHeight) - self.contentEdgeInsets.top,
-                                  self.itemWidth, itemHeight - self.contentEdgeInsets.bottom)];
+                                  self.itemWidth, itemHeight - self.contentEdgeInsets.bottom-spaceX)];
         [item setNeedsDisplay];
         
         index++;
