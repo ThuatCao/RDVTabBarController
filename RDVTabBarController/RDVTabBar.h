@@ -67,6 +67,9 @@
  */
 @property UIEdgeInsets contentEdgeInsets;
 
+
+- (void)setTranslucent:(BOOL)translucent;
+
 /**
  * Sets the height of tab bar.
  */
@@ -77,7 +80,7 @@
  */
 - (CGFloat)minimumContentHeight;
 
-- (void)setTranslucent:(BOOL)translucent;
+
 
 /*
  * Enable or disable tabBar translucency. Default is NO.

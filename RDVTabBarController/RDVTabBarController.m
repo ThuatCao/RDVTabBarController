@@ -54,8 +54,51 @@
     [super viewWillAppear:animated];
     
     [self setSelectedIndex:[self selectedIndex]];
+    
+     [self setTabBarHidden:self.isTabBarHidden animated:NO];
 }
 
+
+- (void)setTabBarHidden:(BOOL)hidden animated:(BOOL)animated {
+    _tabBarHidden = hidden;
+    
+    __weak RDVTabBarController *weakSelf = self;
+    
+    void (^block)() = ^{
+        CGSize viewSize = weakSelf.view.bounds.size;
+        CGFloat tabBarStartingY = viewSize.height;
+        CGFloat contentViewHeight = viewSize.height;
+        CGFloat tabBarHeight = CGRectGetHeight([[weakSelf tabBar] frame]);
+        
+        if (!tabBarHeight) {
+            tabBarHeight = 49;
+        }
+        
+        if (!hidden) {
+            tabBarStartingY = viewSize.height - tabBarHeight;
+            if (![[weakSelf tabBar] isTranslucent]) {
+                contentViewHeight -= ([[weakSelf tabBar] minimumContentHeight] ?: tabBarHeight);
+            }
+            [[weakSelf tabBar] setHidden:NO];
+        }
+        
+        [[weakSelf tabBar] setFrame:CGRectMake(0, tabBarStartingY, viewSize.width, tabBarHeight)];
+        [[weakSelf contentView] setFrame:CGRectMake(0, 0, viewSize.width, contentViewHeight)];
+    };
+    
+    void (^completion)(BOOL) = ^(BOOL finished){
+        if (hidden) {
+            [[weakSelf tabBar] setHidden:YES];
+        }
+    };
+    
+    if (animated) {
+        [UIView animateWithDuration:0.24 animations:block completion:completion];
+    } else {
+        block();
+        completion(YES);
+    }
+}
 -(void)viewDidLayoutSubviews{
     [super viewDidLayoutSubviews];
 
@@ -206,26 +249,26 @@
     return _contentView;
 }
 
-- (void)setTabBarHidden:(BOOL)hidden animated:(BOOL)animated {
-    // make sure any pending layout is done, to prevent spurious animations
-    [self.view layoutIfNeeded];
-
-    _tabBarHidden = hidden;
-    
-    [self.view setNeedsLayout];
-
-    if (!_tabBarHidden) {
-        [[self tabBar] setHidden:NO];
-    }
-
-    [UIView animateWithDuration:(animated ? 0.24 : 0) animations:^{
-        [self.view layoutIfNeeded];
-    } completion:^(BOOL finished){
-        if (self.tabBarHidden) {
-            [[self tabBar] setHidden:YES];
-        }
-    }];
-}
+//- (void)setTabBarHidden:(BOOL)hidden animated:(BOOL)animated {
+//    // make sure any pending layout is done, to prevent spurious animations
+//    [self.view layoutIfNeeded];
+//
+//    _tabBarHidden = hidden;
+//    
+//    [self.view setNeedsLayout];
+//
+//    if (!_tabBarHidden) {
+//        [[self tabBar] setHidden:NO];
+//    }
+//
+//    [UIView animateWithDuration:(animated ? 0.24 : 0) animations:^{
+//        [self.view layoutIfNeeded];
+//    } completion:^(BOOL finished){
+//        if (self.tabBarHidden) {
+//            [[self tabBar] setHidden:YES];
+//        }
+//    }];
+//}
 
 - (void)setTabBarHidden:(BOOL)hidden {
     [self setTabBarHidden:hidden animated:NO];
